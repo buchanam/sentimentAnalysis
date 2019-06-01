@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+
+import classifier
+
 # global variables
-VOCABULARY = []
+VOCABULARY = classifier.VOCABULARY
 V_LENGTH = 0
 
 # strips puncuation and case from vocabulary words
@@ -11,7 +15,7 @@ def cleanWord(word):
 
     return word
     
-def convertToFeatures(file, fileName):
+def convertToFeatures(file, fileName, features):
     newFile = open(fileName, "w")
 
     # first header line
@@ -34,23 +38,26 @@ def convertToFeatures(file, fileName):
         # ~ appended so there is a sentence done symbol which won't match any word in vocab
         lineWordList.append("~")
 
-        print("CLASS LABEL: " + str(classLabel))
+        sentenceVector = []
         for x in range(0,V_LENGTH - 1):
             if (lineWordList[0] == VOCABULARY[x]):
                 newFile.write("1,")
+                sentenceVector.append(1)
                 lineWordList.pop(0)
             else:
                 newFile.write("0,")
+                sentenceVector.append(0)
 
         newFile.write(str(classLabel))
         newFile.write("\n")    
+        features.append(sentenceVector)
     
 
 # preprocessing steps: clean words, create vocab, convert to features
-def preprocessingDriver():
+def processingDriver(trainingFile, testingFile, trainFeatures, testFeatures):
     # open files
-    trainF = open("trainingSet.txt", "r")
-    testF = open("testSet.txt", "r")
+    trainF = open(trainingFile, "r")
+    testF = open(testingFile, "r")
 
     global VOCABULARY
     # create training data vocabulary
@@ -69,5 +76,7 @@ def preprocessingDriver():
     global V_LENGTH
     V_LENGTH = len(VOCABULARY)
 
-    convertToFeatures(trainF, "preprocessed_train.txt")
-    convertToFeatures(testF, "preprocessed_test.txt")
+    convertToFeatures(trainF, "preprocessed_train.txt", trainFeatures)
+    convertToFeatures(testF, "preprocessed_test.txt", testFeatures)
+
+    print(trainFeatures)
