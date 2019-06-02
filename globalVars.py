@@ -1,0 +1,4 @@
+VOCABULARY = []
+V_LENGTH = 0
+PROB_T = 1.0
+PROB_F = 1.0

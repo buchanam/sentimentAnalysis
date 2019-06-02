@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 
-import classifier
+import globalVars 
 
-# global variables
-VOCABULARY = classifier.VOCABULARY
-V_LENGTH = 0
-
-# strips puncuation and case from vocabulary words
+# strips puncuation and case from globalVars.VOCABULARY words
 def cleanWord(word):
     # all lower case
     word = word.lower()
@@ -19,7 +15,7 @@ def convertToFeatures(file, fileName, features):
     newFile = open(fileName, "w")
 
     # first header line
-    for word in VOCABULARY:
+    for word in globalVars.VOCABULARY:
         newFile.write(word + ",")
     newFile.write("classlabel\n")
 
@@ -39,8 +35,8 @@ def convertToFeatures(file, fileName, features):
         lineWordList.append("~")
 
         sentenceVector = []
-        for x in range(0,V_LENGTH - 1):
-            if (lineWordList[0] == VOCABULARY[x]):
+        for x in range(0,globalVars.V_LENGTH - 1):
+            if (lineWordList[0] == globalVars.VOCABULARY[x]):
                 newFile.write("1,")
                 sentenceVector.append(1)
                 lineWordList.pop(0)
@@ -49,9 +45,9 @@ def convertToFeatures(file, fileName, features):
                 sentenceVector.append(0)
 
         newFile.write(str(classLabel))
+        sentenceVector.append(classLabel)
         newFile.write("\n")    
         features.append(sentenceVector)
-    
 
 # preprocessing steps: clean words, create vocab, convert to features
 def processingDriver(trainingFile, testingFile, trainFeatures, testFeatures):
@@ -59,24 +55,23 @@ def processingDriver(trainingFile, testingFile, trainFeatures, testFeatures):
     trainF = open(trainingFile, "r")
     testF = open(testingFile, "r")
 
-    global VOCABULARY
-    # create training data vocabulary
+    
+    # create training data globalVars.VOCABULARY
     for line in trainF:
         for word in line.split():
             word = cleanWord(word)
             # if word not number
-            if not (word.isdigit() or word in VOCABULARY or word is None):
-                VOCABULARY.append(word)
+            if not (word.isdigit() or word in globalVars.VOCABULARY or word is None):
+                globalVars.VOCABULARY.append(word)
 
     trainF.close()
     trainF = open("trainingSet.txt", "r")
-    # sort vocabulary alphabetically
-    VOCABULARY = sorted(VOCABULARY)
-    VOCABULARY.pop(0)
-    global V_LENGTH
-    V_LENGTH = len(VOCABULARY)
+    # sort globalVars.VOCABULARY alphabetically
+    globalVars.VOCABULARY = sorted(globalVars.VOCABULARY)
+    globalVars.VOCABULARY.pop(0)
+    
+    globalVars.V_LENGTH = len(globalVars.VOCABULARY)
 
     convertToFeatures(trainF, "preprocessed_train.txt", trainFeatures)
     convertToFeatures(testF, "preprocessed_test.txt", testFeatures)
 
-    print(trainFeatures)

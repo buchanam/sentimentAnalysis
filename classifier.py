@@ -3,8 +3,10 @@
 # considering good review as TRUE and bad review as FALSE
 
 import string
+import globalVars
 from preprocessing import processingDriver
 from probTable import createTable
+from predict import predict
 # from bayesClassifier import 
 
 VOCABULARY = []
@@ -20,4 +22,4 @@ probTable = []
 
 processingDriver(training, testing, trainFeatures, testFeatures)
 createTable(trainFeatures, probTable)
-#classify()
+predict(trainFeatures, probTable)
